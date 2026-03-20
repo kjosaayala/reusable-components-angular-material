@@ -2,6 +2,10 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
 
+This is a project in which I will be adding reusable components based on the use of the Angular Material library
+Components currently in the project:
+- Reusable Grid: to render a table with almost any type of data
+
 ## Development server
 
 To start a local development server, run:
