@@ -22,22 +22,20 @@ import { IReusableGrid, IReusableGridColumn } from '@shared/interfaces';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReusableGrid implements AfterViewInit {
-  _gridData: WritableSignal<IReusableGrid> = signal({
+  readonly gridState = signal<Required<IReusableGrid>>({
     data: [],
     columns: [],
     totalItems: 0,
     loading: false,
     error: null,
+    pageSize: 0,
+    pageIndex: 0,
   });
 
   hasColumns = computed(() => this.displayedColumns.length > 0);
-  hasData = computed(() => this._gridData() && (this._gridData()?.data?.length ?? 0) > 0);
-  get noDataMessage(): string {
-    return 'There is no data to show';
-  }
-  get loadingMessage(): string {
-    return 'Loading Data...';
-  }
+  hasData = computed(() => this.gridState() && (this.gridState().data?.length ?? 0) > 0);
+  readonly noDataMessage = 'There is no data to show';
+  readonly loadingMessage = 'Loading Data...';
 
   paginator?: MatPaginator;
   sort?: MatSort;
@@ -63,13 +61,13 @@ export class ReusableGrid implements AfterViewInit {
   @Input()
   set gridData(value: IReusableGrid | null | undefined) {
     let normalizedData = this.nornmalizeData(value);
-    this._gridData.set(normalizedData);
+    this.gridState.set(normalizedData);
     this.dataSource.data = normalizedData.data;
     this.assignDataSource();
   }
 
   get displayedColumns(): string[] {
-    return this._gridData()?.columns?.map((col) => col.field) || [];
+    return this.gridState()?.columns?.map((col) => col.field) || [];
   }
 
   ngAfterViewInit(): void {

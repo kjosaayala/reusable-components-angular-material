@@ -1,12 +1,12 @@
-@if (_gridData().loading) {
+@if (gridState().loading) {
   <div>{{ loadingMessage }}</div>
-} @else if (_gridData().error) {
-  <div>{{ _gridData().error }}</div>
+} @else if (gridState().error) {
+  <div>{{ gridState().error }}</div>
 } @else if (hasData() && !hasColumns()) {
   <div>There is no column defined for this grid.</div>
 } @else {
   <table mat-table [dataSource]="dataSource" matSort>
-    @for (col of _gridData().columns; track trackByField($index, col)) {
+    @for (col of gridState().columns; track trackByField($index, col)) {
       <ng-container [matColumnDef]="col.field">
         <th
           mat-header-cell
@@ -59,7 +59,7 @@
   </table>
   @if (hasData()) {
     <mat-paginator
-      [length]="_gridData().data?.length || 0"
+      [length]="gridState().data.length"
       [pageSize]="5"
       [pageSizeOptions]="[5, 10, 20]"
       [showFirstLastButtons]="true"
