@@ -1,0 +1,69 @@
+@if (_gridData().loading) {
+  <div>{{ loadingMessage }}</div>
+} @else if (_gridData().error) {
+  <div>{{ _gridData().error }}</div>
+} @else if (hasData() && !hasColumns()) {
+  <div>There is no column defined for this grid.</div>
+} @else {
+  <table mat-table [dataSource]="dataSource" matSort>
+    @for (col of _gridData().columns; track trackByField($index, col)) {
+      <ng-container [matColumnDef]="col.field">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          [style.width]="col.autosize ? '1%' : col.width || null"
+        >
+          {{ col.header }}
+        </th>
+
+        <td mat-cell *matCellDef="let row" [style.width]="col.autosize ? '1%' : col.width || null">
+          @switch (col.fieldType ?? 'text') {
+            @case ('number') {
+              {{ row[col.field] != null ? (row[col.field] | number: '1.0-2') : '—' }}
+            }
+            @case ('date') {
+              {{ row[col.field] ? (row[col.field] | date: 'dd/MM/yyyy') : '—' }}
+            }
+            @case ('boolean') {
+              {{ row[col.field] === true ? 'Yes' : row[col.field] === false ? 'No' : '—' }}
+            }
+            @case ('currency') {
+              {{
+                row[col.field] != null
+                  ? (row[col.field]
+                    | currency
+                      : col.currencyCode || 'USD'
+                      : col.currencyDisplay || 'symbol'
+                      : undefined
+                      : col.locale || 'en-US')
+                  : '—'
+              }}
+            }
+            @default {
+              {{ row[col.field] ?? '—' }}
+            }
+          }
+        </td>
+      </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+        {{ noDataMessage }}
+      </td>
+    </tr>
+  </table>
+  @if (hasData()) {
+    <mat-paginator
+      [length]="_gridData().data?.length || 0"
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10, 20]"
+      [showFirstLastButtons]="true"
+    >
+    </mat-paginator>
+  }
+}
